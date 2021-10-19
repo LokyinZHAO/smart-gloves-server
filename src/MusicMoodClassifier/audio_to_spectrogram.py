@@ -2,6 +2,7 @@ from pydub import AudioSegment
 import librosa
 import librosa.display
 import matplotlib.pyplot as plt
+import pylab
 import numpy as np
 
 
@@ -50,15 +51,6 @@ class Audio2Spectrogram:
 
         librosa.display.specshow(librosa.power_to_db(S, ref=np.max), y_axis='mel', x_axis='time')
 
-        plt.show()
         plt.savefig(dest, bbox_inches=None, pad_inches=0, dpi=100)
         plt.close()
-
-
-if __name__ == '__main__':
-    mp3_file = '../data/mp3/cls.mp3'
-    wav_file = '../data/wav/cls.wav'
-    spec_file = '../data/spectrogram/cls.jpg'
-    audio2spectrogram = Audio2Spectrogram()
-    # audio2spectrogram.audio_to_wav(mp3_file, wav_file)
-    audio2spectrogram.wav_to_spectrogram(wav_file, spec_file)
+        plt.show()
