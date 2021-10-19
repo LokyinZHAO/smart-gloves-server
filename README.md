@@ -1,8 +1,8 @@
-# ICT Project
+# ICT Project -- Smart Gloves
 
 ## preparation
 
-We implemented this project initially on `macOS Big Sur 11.6`, but `Ubuntu 20.04.3 LTS`should also compatible, which is exactly the platform we plan to port to.
+We implemented this project initially on `macOS Big Sur 11.6`, but `Ubuntu 20.04.3 LTS`should also be compatible, which is exactly the platform we plan to port to.
 
 Users can use `apt`  on Ubuntu or `homebrew` on macOS to install the required dependencies.
 
@@ -17,7 +17,7 @@ Users can use `apt`  on Ubuntu or `homebrew` on macOS to install the required de
 - **test**: the test source code
 - **test_resources**: the resources used by the test
 - **.python-version**: Specified python version, used by `pyenv`
-- **requirements.txt**: required python packages
+- **requirements.txt**: required python packages list
 
 
 
