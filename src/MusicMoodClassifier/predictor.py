@@ -50,7 +50,7 @@ class Predictor:
         Predict the music mood by it's spectrogram
 
         Args:
-            img_path: test image file, .jep format expected
+            img_path: test image file, .jpg format expected
             k: top k
 
         Returns:

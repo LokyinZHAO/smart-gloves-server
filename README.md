@@ -14,8 +14,6 @@ Users can use `apt`  on Ubuntu or `homebrew` on macOS to install the required de
 
 - **src**: the project source code, modules should be divided into different packeges according to different functions.
 - **resources**: the resources used by the project
-- **test**: the test source code
-- **test_resources**: the resources used by the test
 - **.python-version**: Specified python version, used by `pyenv`
 - **requirements.txt**: required python packages list
 
