@@ -1,7 +1,5 @@
 # General
 .DS_Store
 /.idea
-/test
-/test_resources
 __pycache__/
 
