@@ -20,7 +20,7 @@ class BeatTracker:
         @return: estimated beat event locations in time units, scaled beats strength, mean of strength
         """
         # set sampling rate to 48kHz
-        y, sr = librosa.load(music_src)
+        y, sr = librosa.load(music_src, offset=30, duration=30)
         tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr, units="time")
         beats_track = []
         for beat_time in track_beats_time:
