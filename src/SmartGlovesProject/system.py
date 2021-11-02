@@ -31,8 +31,10 @@ if __name__ == '__main__':
     server_socket.bind(('127.0.0.1', 9999))
     server_socket.listen(5)
     print("start listening")
-    sock, addr = server_socket.accept()
-    print(f"new connection:{addr}")
-    sock.send(serialized_music_info)
-    print(f"music info sent")
+    while True:
+        sock, addr = server_socket.accept()
+        print(f"new connection:{addr}")
+        sock.send(serialized_music_info)
+        print(f"music info sent")
+        sock.close()
 
