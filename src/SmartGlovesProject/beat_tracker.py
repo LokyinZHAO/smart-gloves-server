@@ -1,6 +1,5 @@
 import librosa.beat
 import librosa.display
-from sklearn import preprocessing
 import numpy as np
 
 

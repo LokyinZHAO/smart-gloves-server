@@ -4,9 +4,6 @@ import torchvision
 from PIL import Image
 
 
-# from torchvision import models, transforms
-
-
 class Predictor:
     """
     Predict the music mood by the input spectrogram
