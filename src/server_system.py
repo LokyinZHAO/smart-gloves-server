@@ -3,7 +3,7 @@ import pickle
 from SmartGlovesProject.predictor import Predictor
 from SmartGlovesProject.audio_to_spectrogram import Audio2Spectrogram
 from SmartGlovesProject.beat_tracker import BeatTracker
-from SmartGlovesProject.music_info import MusicInfo
+from music_info import MusicInfo
 import SmartGlovesProject
 import socket
 

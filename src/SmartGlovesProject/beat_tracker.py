@@ -13,14 +13,17 @@ class BeatTracker:
         pass
 
     @staticmethod
-    def get_beats(music_src):
+    def get_beats(music_src, offset=0.0, duration=None,sr=22050):
         """Get the beats information of a track
 
         @param music_src: music source file path
+        @param offset: Sampling start time
+        @param duration: Sampling duration
+        @param sr: Sampling Rate
         @return: estimated beat event locations in time units, scaled beats strength, mean of strength
         """
-        # set sampling rate to 48kHz
-        y, sr = librosa.load(music_src, offset=30, duration=30)
+        # set sampling rate to 
+        y, sr = librosa.load(music_src, offset=offset, duration=duration, sr=sr)
         tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr, units="time")
         beats_track = []
         for beat_time in track_beats_time:
