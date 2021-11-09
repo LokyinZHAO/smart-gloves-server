@@ -13,7 +13,7 @@ class BeatTracker:
         pass
 
     @staticmethod
-    def get_beats(music_src, offset=0.0, duration=None,sr=22050):
+    def get_beats(music_src, offset=0.0, duration=None, sr=22050):
         """Get the beats information of a track
 
         @param music_src: music source file path
@@ -24,7 +24,10 @@ class BeatTracker:
         """
         # set sampling rate to 
         y, sr = librosa.load(music_src, offset=offset, duration=duration, sr=sr)
-        tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr, units="time")
+        # convert amplitude to decibels
+        # y_db = librosa.amplitude_to_db(abs(y))
+        # tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr, units="time")
+        tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr)
         beats_track = []
         for beat_time in track_beats_time:
             # 对前后0.1s的数据进行平均

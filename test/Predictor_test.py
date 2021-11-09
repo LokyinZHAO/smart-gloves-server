@@ -1,4 +1,4 @@
-from SmartGlovesProject import predictor as pred
+from SmartGlovesProject_Server import mood_predictor as pred
 
 if __name__ == '__main__':
     predictor = pred.Predictor("./resources/Resnet_SGD_valscore_60.pt")

@@ -1,4 +1,4 @@
-from SmartGlovesProject.beat_tracker import BeatTracker
+from SmartGlovesProject_Server.beat_tracker import BeatTracker
 
 if __name__ == '__main__':
     bt = BeatTracker()

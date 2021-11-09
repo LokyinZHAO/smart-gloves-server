@@ -1,17 +1,25 @@
 class MusicInfo:
-    def __init__(self, name, mood, prob, beats, strength, mean):
-        """store music information for serialization
+    """
+    Information of Music,Generally contains the following attributes:
+        name: music_name
+        mood: music mood
+        prob: probability of each mood
+        beats: beats time
+        strength: music beat intensity, normalized to [0, 1]
+        mean: average beat intensity
 
-        @param name: music_name
-        @param mood: music mood
-        @param prob: probability of each mood
-        @param beats: beats time
-        @param strength: music beat intensity, normalized to [0, 1]
-        @param mean: average beat intensity
+    """
+
+    def __init__(self):
+        """store music information for serialization
         """
-        self.music_name = name
-        self.mood = mood
-        self.prob = prob
-        self.beats = beats
-        self.strength = strength
-        self.mean = mean
+
+    def __setattr__(self, key, value):
+        self.__dict__[key] = value
+
+    def __str__(self):
+        to_str = "=======================\n"
+        for atrr in self.__dict__:
+            to_str += f'{atrr.__str__()} : {self.__dict__[atrr]}\n'
+        to_str += "=======================\n"
+        return to_str
