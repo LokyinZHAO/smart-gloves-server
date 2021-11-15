@@ -26,11 +26,11 @@ class STFTer:
         y, sr = librosa.load(src_file, sr=sr, offset=offset, duration=duration)
         fourier_trans_y = librosa.stft(y)
         fourier_trans_y_db = librosa.amplitude_to_db(np.abs(fourier_trans_y))
-        time_per_frame = duration/fourier_trans_y_db.shape[1]
+        time_per_frame = duration / fourier_trans_y_db.shape[1]
         # debug
         # plt.figure(figsize=(14, 5))
         # librosa.display.specshow(fourier_trans_y_db, sr=sr, x_axis='time', y_axis='hz')
         # plt.colorbar()
         # plt.show()
         # debug
-        return fourier_trans_y_db,time_per_frame
+        return fourier_trans_y_db, time_per_frame

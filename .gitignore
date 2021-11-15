@@ -3,3 +3,7 @@
 /.idea
 __pycache__/
 
+/resources/mp3/
+/resources/spectrogram/
+
+/resources/wav/

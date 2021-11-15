@@ -27,7 +27,7 @@ class BeatTracker:
         # convert amplitude to decibels
         # y_db = librosa.amplitude_to_db(abs(y))
         # tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr, units="time")
-        tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr)
+        tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr, units='time')
         beats_track = []
         for beat_time in track_beats_time:
             # 对前后0.1s的数据进行平均

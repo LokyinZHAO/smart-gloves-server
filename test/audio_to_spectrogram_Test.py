@@ -1,4 +1,4 @@
-from SmartGlovesProject_Server.audio_to_spectrogram import Audio2Spectrogram
+from SmartGlovesProject_Server.Data_Prepare.audio_to_spectrogram import Audio2Spectrogram
 
 
 if __name__ == '__main__':
