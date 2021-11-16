@@ -9,9 +9,6 @@ from SmartGlovesProject_Server.Data_Prepare.audio_to_spectrogram import Audio2Sp
 
 # 子进程要执行的代码
 def run_proc(item):
-    if len(sys.argv) != 2:
-        print("usage: [mood]")
-
     au_2_wav_spec = Audio2Spectrogram()
 
     start_time = time.time()
@@ -37,15 +34,15 @@ def run_proc(item):
 
 if __name__ == '__main__':
     pool = multiprocessing.Pool(processes=4)
+    total_time = time.time()
     results = [pool.apply_async(run_proc, ("Happy",)), pool.apply_async(run_proc, ("Sad",)),
                pool.apply_async(run_proc, ("Angry",)), pool.apply_async(run_proc, ("Relaxed",))]
     pool.close()
     pool.join()
-    total_time = 0
+    total_time = time.time() - total_time
     total_item = 0
     for res in results:
-        total_time += res.get()["time_consume"]
-        total_time += res.get()["items"]
+        total_item += res.get()["items"]
     print(f"Processing finished")
     print(f"Total number of items processed: {total_item}")
-    print(f"Total time: {total_time}")
+    print(f"Total time:  {total_time // 3600}H {(total_time % 3600) // 60}M {int(total_time % 60)}S")
