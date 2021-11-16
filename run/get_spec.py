@@ -25,4 +25,5 @@ if __name__ == '__main__':
         spec_dest_dir = "./resources/spectrogram/" + item + "/"
         if not os.path.exists(spec_dest_dir):
             os.mkdir(spec_dest_dir)
-        au_2_wav_spec.batch_processing(src_dir=mp3_dir, wav_dest_dir=wav_dest_dir, spec_dest_dir=spec_dest_dir)
+        au_2_wav_spec.batch_processing(src_dir=mp3_dir, wav_dest_dir=wav_dest_dir, spec_dest_dir=spec_dest_dir,
+                                       status=True)
