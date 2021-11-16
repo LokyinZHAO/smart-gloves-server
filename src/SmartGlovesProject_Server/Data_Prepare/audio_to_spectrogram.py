@@ -59,12 +59,14 @@ class Audio2Spectrogram:
         plt.show()
 
     @staticmethod
-    def batch_processing(src_dir: str, wav_dest_dir: str, spec_dest_dir: str, status:bool):
+    def batch_processing(src_dir: str, wav_dest_dir: str, spec_dest_dir: str, status: bool, keep_wav: bool = True):
         """
         Convert all mp3 files in a folder into wav and spectrogram
         @param src_dir: mp3 files dir
         @param wav_dest_dir: wav files dir
         @param spec_dest_dir: spectrogram files dir
+        @param status: whether to show the current progress
+        @param keep_wav: whether to keep wav file
         @return: total item number
         """
         files = glob.glob(src_dir + "*.mp3", recursive=True)
@@ -82,6 +84,8 @@ class Audio2Spectrogram:
                 dest_jpg = spec_dest_dir + track_id.replace("mp3", "jpg")
                 spec.audio_to_wav(src=file, dest=dest_wav)
                 spec.wav_to_spectrogram(src=dest_wav, dest=dest_jpg)
+                if not keep_wav:
+                    os.remove(dest_wav)
                 cnt += 1
         else:
             for file in files:
@@ -90,5 +94,7 @@ class Audio2Spectrogram:
                 dest_jpg = spec_dest_dir + track_id.replace("mp3", "jpg")
                 spec.audio_to_wav(src=file, dest=dest_wav)
                 spec.wav_to_spectrogram(src=dest_wav, dest=dest_jpg)
+                if not keep_wav:
+                    os.remove(dest_wav)
                 cnt += 1
         return cnt
