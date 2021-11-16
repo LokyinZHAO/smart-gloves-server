@@ -59,17 +59,27 @@ class Audio2Spectrogram:
         plt.show()
 
     @staticmethod
-    def batch_processing(src_dir: str, wav_dest_dir: str, spec_dest_dir:str):
-        files = glob.glob(src_dir+"*.mp3", recursive=True)
+    def batch_processing(src_dir: str, wav_dest_dir: str, spec_dest_dir: str):
+        """
+        Convert all mp3 files in a folder into wav and spectrogram
+        @param src_dir: mp3 files dir
+        @param wav_dest_dir: wav files dir
+        @param spec_dest_dir: spectrogram files dir
+        @return: total item number
+        """
+        files = glob.glob(src_dir + "*.mp3", recursive=True)
         spec = Audio2Spectrogram()
         # Check if directory is already created
         if not os.path.exists(wav_dest_dir):
             os.mkdir(wav_dest_dir)
         if not os.path.exists(spec_dest_dir):
             os.mkdir(spec_dest_dir)
+        cnt = 0
         for file in tqdm(files):
             track_id = file.split("/")[-1]
             dest_wav = wav_dest_dir + track_id.replace("mp3", "wav")
             dest_jpg = spec_dest_dir + track_id.replace("mp3", "jpg")
             spec.audio_to_wav(src=file, dest=dest_wav)
             spec.wav_to_spectrogram(src=dest_wav, dest=dest_jpg)
+            cnt += 1
+        return cnt
