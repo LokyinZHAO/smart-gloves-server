@@ -51,7 +51,7 @@ class Predictor:
             k: top k
 
         Returns:
-            the predicted mood class and its corresponding probability
+            the predicted mood class and its corresponding probability in dict
         """
         img = Image.open(img_path)
         img = self.loader(img).unsqueeze(0).to(self.device)
@@ -61,4 +61,7 @@ class Predictor:
         probability = probability[0].detach().numpy()
         class_idx = class_idx[0].detach().numpy()
         class_val = self.map_from_idx(class_idx, self.class_names)
-        return class_val, probability
+        mood = {}
+        for i in range(k):
+            mood[class_val[i]] = probability[i]
+        return mood
