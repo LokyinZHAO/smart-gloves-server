@@ -64,4 +64,5 @@ class Predictor:
         mood = {}
         for i in range(k):
             mood[class_val[i]] = probability[i]
-        return mood
+        max_mood = class_val[0]
+        return mood, max_mood

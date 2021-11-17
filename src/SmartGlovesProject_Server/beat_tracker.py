@@ -5,9 +5,11 @@ import librosa.display
 def get_beats(y, sr=22050):
     """Get the beats information of a track
 
-    @param y: audio time series
-    @param sr: Sampling Rate
-    @return: estimated beat event locations in frames units
+    Arguments:
+        y: audio time series
+        sr: Sampling Rate
+    Return:
+         estimated beat event locations in frames units
     """
     tempo, track_beats_time = librosa.beat.beat_track(y=y, sr=sr, units='frames')
     # beats_track = []
