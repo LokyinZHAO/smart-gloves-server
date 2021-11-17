@@ -48,24 +48,24 @@ def run_proc(item):
             if wav_resp.status < 300:
                 pass
             else:
-                log_file.write(track_id.split('.')[0] + ":" + wav_resp.errorCode + "--" + wav_resp.errorMessage)
+                log_file.write(track_id.split('.')[0] + ":" + wav_resp.errorCode + "--" + wav_resp.errorMessage+'\n')
 
             jpg_resp = obs_client.putFile(
                 'spec-data',
                 objectKey=put_prefix + track_id.split('.')[0] + ".jpg",
-                File_path=dest_jpg,
+                file_path=dest_jpg,
                 metadata={'mood': put_prefix},
                 headers=jpg_headers
             )
             if jpg_resp.status < 300:
                 pass
             else:
-                log_file.write(track_id.split('.')[0] + ":" + jpg_resp.errorCode + " " + jpg_resp.errorMessage)
+                log_file.write(track_id.split('.')[0] + ":" + jpg_resp.errorCode + " " + jpg_resp.errorMessage+'\n')
         except:
-            log_file.write("==========EXCEPTION============")
-            log_file.write("except-track id:" + track_id)
-            log_file.write(traceback.format_exc())
-            log_file.write("==========EXCEPTION============")
+            log_file.write("==========EXCEPTION============\n")
+            log_file.write("except-track id:" + track_id+'\n')
+            log_file.write(traceback.format_exc()+'\n')
+            log_file.write("==========EXCEPTION============\n")
         os.remove(dest_wav)
         os.remove(dest_jpg)
         cnt += 1
@@ -88,6 +88,6 @@ if __name__ == '__main__':
     total_item = 0
     for res in results:
         total_item += res.get()
-    batch_log_file.write(f"Processing finished")
-    batch_log_file.write(f"Total number of items processed: {total_item}")
-    batch_log_file.write(f"Total time:  {total_time // 3600}H {(total_time % 3600) // 60}M {int(total_time % 60)}S")
+    batch_log_file.write(f"Processing finished\n")
+    batch_log_file.write(f"Total number of items processed: {total_item}\n")
+    batch_log_file.write(f"Total time:  {total_time // 3600}H {(total_time % 3600) // 60}M {int(total_time % 60)}S\n")
