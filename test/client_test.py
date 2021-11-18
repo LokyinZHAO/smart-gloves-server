@@ -1,10 +1,7 @@
 import pickle
 import socket
-import sys
-import traceback
 import traceback
 from obs import ObsClient
-from obs import PutObjectHeader
 from SmartGlovesProject_Server.Data_Prepare.credential import obs_Access_Key_Id, obs_Secret_Access_Key, obs_endpoint
 
 server_addr = "localhost"
@@ -14,12 +11,13 @@ obs_client = ObsClient(access_key_id=obs_Access_Key_Id,
                        secret_access_key=obs_Secret_Access_Key,
                        server=obs_endpoint)
 
-proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-proxy_socket.connect((server_addr, server_port))
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.connect((server_addr, server_port))
 
 
 def get_music_info():
-    pack_tar = proxy_socket.recv(1024).decode("utf-8")
+    pack_tar = server_socket.recv(1024).decode("utf-8")
+    print("get target, requesting object from bucket")
     try:
         resp = obs_client.getObject(bucketName='info-data',
                                     objectKey=pack_tar,
