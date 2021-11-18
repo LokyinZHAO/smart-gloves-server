@@ -97,7 +97,7 @@ def upload_to_bucket(pack_file_dir, pack_name):
         resp = obs_client.putFile(bucketName="info-data",
                                   objectKey=pack_name,
                                   file_path=pack_file_dir,
-                                  progressCallback=callback,
+                                  # progressCallback=callback,
                                   headers=headers
                                   )
         if resp.status < 300:
@@ -117,7 +117,7 @@ def upload_to_bucket(pack_file_dir, pack_name):
 
 if __name__ == '__main__':
     '''
-    @version 2.2
+    @version 2.3
     '''
     proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     proxy_socket.bind((proxy_addr, proxy_port))
@@ -132,14 +132,19 @@ if __name__ == '__main__':
         while True:
             request = request_conn.recv(1024).decode("utf-8")
             request_conn.send(bytes("200 OK", encoding='utf8'))
-            print("get request: " + request)
+            print("get request: " + request + " from " + request_addr)
             music = process(src_root_dir + request)
-            pack_file = open("./test_resources/music_info.dumps", 'wb')
-            pickle.dump(music, pack_file)
-            pack_file.close()
-            print("data ready: " + "./test_resources/music_info.dumps")
-            resp = upload_to_bucket("./test_resources/music_info.dumps", "music_info.dumps")
+            # 序列化成文件
+            dump_file_path = "./test_resources/music_info.dumps"
+            dump_file = open(dump_file_path, 'wb')
+            pickle.dump(music, dump_file)
+            dump_file.close()
+            # 将序列化文件上传到桶
+            print("data ready: " + dump_file_path)
+            dump_name = "music_info.dumps"
+            resp = upload_to_bucket(dump_file_path, dump_name)
             if resp:
+                print("dumps uploaded to bucket: " + dump_name)
                 client_conn, client_addr = server_socket.accept()
                 client_conn.send(bytes("music_info.dumps", encoding='utf8'))
-            print("pack sent")
+            print("pack target sent to " + request_addr)
