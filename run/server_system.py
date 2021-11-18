@@ -127,24 +127,29 @@ if __name__ == '__main__':
     server_socket.bind((server_addr, server_port))
     server_socket.listen(1)
 
+    print("start listening")
+
     while True:
         request_conn, request_addr = proxy_socket.accept()
-        while True:
-            request = request_conn.recv(1024).decode("utf-8")
-            request_conn.send(bytes("200 OK", encoding='utf8'))
-            print("get request: " + request + " from " + request_addr)
-            music = process(src_root_dir + request)
-            # 序列化成文件
-            dump_file_path = "./test_resources/music_info.dumps"
-            dump_file = open(dump_file_path, 'wb')
-            pickle.dump(music, dump_file)
-            dump_file.close()
-            # 将序列化文件上传到桶
-            print("data ready: " + dump_file_path)
-            dump_name = "music_info.dumps"
-            resp = upload_to_bucket(dump_file_path, dump_name)
-            if resp:
-                print("dumps uploaded to bucket: " + dump_name)
-                client_conn, client_addr = server_socket.accept()
-                client_conn.send(bytes("music_info.dumps", encoding='utf8'))
-            print("pack target sent to " + request_addr)
+        print("new request connection: " + request_addr[0])
+        request = request_conn.recv(1024).decode("utf-8")
+        request_conn.send(bytes("200 OK", encoding='utf8'))
+        print("get request: " + request + " from " + request_addr[0])
+        music = process(src_root_dir + request)
+        # 序列化成文件
+        dump_file_path = "./test_resources/music_info.dumps"
+        dump_file = open(dump_file_path, 'wb')
+        pickle.dump(music, dump_file)
+        dump_file.close()
+        # 将序列化文件上传到桶
+        print("data ready: " + dump_file_path)
+        dump_name = "music_info.dumps"
+        resp = upload_to_bucket(dump_file_path, dump_name)
+        if resp:
+            print("dumps uploaded to bucket: " + dump_name)
+            client_conn, client_addr = server_socket.accept()
+            client_conn.send(bytes("music_info.dumps", encoding='utf8'))
+            print("pack target sent to " + client_addr[0])
+            client_conn.close()
+        request_conn.close()
+

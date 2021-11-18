@@ -7,7 +7,7 @@ def select_frame(fourier_trans_matrix: np.ndarray, selection):
     for i in selection:
         frame.append(fourier_trans_matrix[i])
     frame = np.array(frame)
-    frame_scale = minmax_scale(frame, feature_range=(-1, 1), axis=1)
+    frame_scale = minmax_scale(frame, feature_range=(0, 1), axis=1)
     return frame_scale
 
 

@@ -17,7 +17,7 @@ server_socket.connect((server_addr, server_port))
 
 def get_music_info():
     pack_tar = server_socket.recv(1024).decode("utf-8")
-    print("get target, requesting object from bucket")
+    print("get target " + pack_tar + ", requesting object from bucket")
     try:
         resp = obs_client.getObject(bucketName='info-data',
                                     objectKey=pack_tar,
