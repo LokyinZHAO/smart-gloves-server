@@ -8,8 +8,8 @@ if __name__ == '__main__':
                           secret_access_key=obs_Secret_Access_Key,
                           server=obs_endpoint)
 
-    # # 创建桶
-    # resp = obsClient.createBucket(bucketName="spec-data", location="cn-east-3")
+    # 创建桶
+    # resp = obsClient.createBucket(bucketName="info-data", location="cn-east-3")
     # if resp.status < 300:
     #     print('requestId:', resp.requestId)
     # else:
@@ -39,34 +39,33 @@ if __name__ == '__main__':
     #     print(traceback.format_exc())
 
     # 列举桶内对象
-    try:
-        resp = obsClient.listObjects('wav-data', max_keys=100)
-
-        if resp.status < 300:
-            print('requestId:', resp.requestId)
-            print('name:', resp.body.name)
-            print('prefix:', resp.body.prefix)
-            print('max_keys:', resp.body.max_keys)
-            print('is_truncated:', resp.body.is_truncated)
-            index = 1
-            for content in resp.body.contents:
-                print('object [' + str(index) + ']')
-                print('key:', content.key)
-                print('lastModified:', content.lastModified)
-                print('etag:', content.etag)
-                print('size:', content.size)
-                print('storageClass:', content.storageClass)
-                print('owner_id:', content.owner.owner_id)
-                print('owner_name:', content.owner.owner_name)
-                index += 1
-        else:
-            print('errorCode:', resp.errorCode)
-            print('errorMessage:', resp.errorMessage)
-    except:
-        import traceback
-
-        print(traceback.format_exc())
-
+    # try:
+    #     resp = obsClient.listObjects('wav-data', max_keys=100)
+    #
+    #     if resp.status < 300:
+    #         print('requestId:', resp.requestId)
+    #         print('name:', resp.body.name)
+    #         print('prefix:', resp.body.prefix)
+    #         print('max_keys:', resp.body.max_keys)
+    #         print('is_truncated:', resp.body.is_truncated)
+    #         index = 1
+    #         for content in resp.body.contents:
+    #             print('object [' + str(index) + ']')
+    #             print('key:', content.key)
+    #             print('lastModified:', content.lastModified)
+    #             print('etag:', content.etag)
+    #             print('size:', content.size)
+    #             print('storageClass:', content.storageClass)
+    #             print('owner_id:', content.owner.owner_id)
+    #             print('owner_name:', content.owner.owner_name)
+    #             index += 1
+    #     else:
+    #         print('errorCode:', resp.errorCode)
+    #         print('errorMessage:', resp.errorMessage)
+    # except:
+    #     import traceback
+    #
+    #     print(traceback.format_exc())
 
     # # 获取桶配额，0表示无上限
     # try:

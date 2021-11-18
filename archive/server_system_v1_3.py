@@ -7,7 +7,7 @@ import socket
 
 if __name__ == '__main__':
     '''
-    @version 2.1
+    @version 1.3
     '''
     pred = Predictor(trained_weights_path=SmartGlovesProject_Server.trained_weight_file)
     # mp3_music_file = "./test_resources/audio/LightYourStory.mp3"
