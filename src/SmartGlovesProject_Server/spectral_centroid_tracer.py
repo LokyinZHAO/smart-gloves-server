@@ -1,5 +1,4 @@
 import librosa
-import numpy
 from sklearn.preprocessing import minmax_scale
 
 
