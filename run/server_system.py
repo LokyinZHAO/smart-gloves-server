@@ -7,6 +7,7 @@ from obs import ObsClient
 from obs import PutObjectHeader
 
 import librosa
+import numpy as np
 from SmartGlovesProject_Server.Data_Prepare.audio_to_spectrogram import wav_to_spectrogram
 from SmartGlovesProject_Server.beat_tracker import get_beats
 from SmartGlovesProject_Server.mood_predictor import Predictor
@@ -25,7 +26,7 @@ server_port = 7435
 
 pred = Predictor("./resources/Resnet_SGD_valscore_60.pt")
 
-src_root_dir = "./resources/wav/Angry/"
+wav_file_dir = "./resources/wav/Angry/"
 
 obs_client = ObsClient(access_key_id=obs_Access_Key_Id,
                        secret_access_key=obs_Secret_Access_Key,
@@ -132,10 +133,23 @@ if __name__ == '__main__':
     while True:
         request_conn, request_addr = proxy_socket.accept()
         print("new request connection: " + request_addr[0])
-        request = request_conn.recv(1024).decode("utf-8")
-        request_conn.send(bytes("200 OK", encoding='utf8'))
+        request = request_conn.recv(1024).decode("utf8")
+        while request == '':
+            request = request_conn.recv(1024).decode("utf8")
+            print('get empty body')
+        wav_file_dir = ''
+        if request == 'uploaded':
+            # 直接从文件中找
+            wav_file_dir = open('./resources/upload_music.pkl', 'rb')
+            pkl_object = pickle.load(wav_file_dir)
+            pkl_object.tofile('./resources/upload_music.wav')
+            wav_file_dir = './resources/upload_music.wav'
+        else:
+            # 音乐名
+            wav_file_dir = "resources/wav/Angry/" + request + '.wav'
+        # request_conn.send(bytes("200 OK", encoding='utf8'))
         print("get request: " + request + " from " + request_addr[0])
-        music = process(src_root_dir + request)
+        music = process(wav_file_dir)
         # 序列化成文件
         dump_file_path = "./test_resources/music_info.dumps"
         dump_file = open(dump_file_path, 'wb')
@@ -152,4 +166,3 @@ if __name__ == '__main__':
             print("pack target sent to " + client_addr[0])
             client_conn.close()
         request_conn.close()
-

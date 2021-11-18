@@ -1,4 +1,5 @@
-import pandas as pd
+import multiprocessing
+
 import streamlit as st
 import numpy as np
 import time
@@ -6,6 +7,17 @@ import socket
 import pickle
 
 from PIL import Image
+
+
+def send_to_sever(item):
+    # socket 传输
+    proxy_addr = "localhost"
+    proxy_port = 6456
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((proxy_addr, proxy_port))
+    s.send(bytes(item, encoding='utf8'))
+    s.close()
+
 
 # from streamlit.elements.image import image_to_url
 #
@@ -18,6 +30,8 @@ from PIL import Image
 # .css-fg4pbf{background-image:url(''' + img_url + ''');}</style>
 # ''',unsafe_allow_html=True)
 
+file_dir = './resources/upload_music.pkl'
+
 # title
 st.title(":raised_hand:Smart Gloves:raised_hand:")
 st.subheader("powered by Raspberry Pi 4B")
@@ -29,31 +43,28 @@ if st.checkbox('Show details'):
     image = Image.open('frame.jpg')
     st.image(image, caption='hust', use_column_width=True)
 
-# socket 传输
-# proxy_addr = "localhost"
-# proxy_port = 6456
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# s.connect((proxy_addr, proxy_port))
 st.subheader('搜索音乐')
 st.write('您可以在云上音乐数据库中搜索您喜欢的歌曲')
 t0 = ''
 t = st.text_input('搜索音乐', '')
-if t != t0:
-    # s.send(bytes(t))
-    st.write('You mean', t, '?')
+if not t == t0:
+    pool = multiprocessing.Pool(processes=1)
+    results = [pool.apply_async(send_to_sever, (t,))]
+    t0 = t
+    st.write('You mean ' + t + ' ?')
 
 st.subheader('音乐上传')
 st.write('您可以上传您喜欢的歌曲的文件，或者自己唱歌进行录制并上传')
 uploaded_file = st.file_uploader("上传一个音乐文件", type="wav")
 
 if uploaded_file is not None:
-
     # 将传入的文件转为Opencv格式
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    up_pkl = open('upload_music.pkl', 'wb')
+    up_pkl = open(file_dir, 'wb')
     pickle.dump(file_bytes, up_pkl)
-    # s.send(bytes('uploaded'))
     up_pkl.close()
+    pool = multiprocessing.Pool(processes=1)
+    results = [pool.apply_async(send_to_sever, ('uploaded',))]
     # opencv_image = cv2.imdecode(file_bytes, 1)
     # 展示图片
     # st.image(opencv_image, channels="BGR")
@@ -61,8 +72,9 @@ if uploaded_file is not None:
     # cv2.imwrite('test.jpg',opencv_image)
 # 然后就可以用这个图片进行一些操作了
 
-f = open('upload_music.pkl','rb')
+f = open(file_dir, 'rb')
 music = pickle.load(f)
+f.close()
 
 st.audio(music, format='audio/wav')
 
