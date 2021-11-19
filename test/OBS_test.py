@@ -3,11 +3,12 @@ from obs import PutObjectHeader
 from SmartGlovesProject_Server.Data_Prepare.credential import obs_Access_Key_Id, obs_Secret_Access_Key, obs_endpoint, \
     obs_location
 
+# https://support.huaweicloud.com/sdk-python-devg-obs/obs_22_0100.html
+
 if __name__ == '__main__':
     obsClient = ObsClient(access_key_id=obs_Access_Key_Id,
                           secret_access_key=obs_Secret_Access_Key,
                           server=obs_endpoint)
-
     # 创建桶
     # resp = obsClient.createBucket(bucketName="info-data", location="cn-east-3")
     # if resp.status < 300:

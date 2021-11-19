@@ -116,9 +116,23 @@ def upload_to_bucket(pack_file_dir, pack_name):
         return False
 
 
+def find_music(tar: str):
+    resp = obs_client.getObject('info-data',
+                                objectKey=tar + '.dump',
+                                loadStreamInMemory=True)
+    if resp.status == 404:
+        # 未找到对象
+        return 404, None
+    elif resp.status < 300:
+        music_info = pickle.loads(resp.get('body').get('buffer'))
+        return 200, music_info
+    else:
+        return 400, None
+
+
 if __name__ == '__main__':
     '''
-    @version 2.3
+    @version 2.4
     '''
     proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     proxy_socket.bind((proxy_addr, proxy_port))
@@ -137,34 +151,58 @@ if __name__ == '__main__':
         while request == '':
             request = request_conn.recv(1024).decode("utf8")
             print('get empty body')
+            # request_conn.send(bytes("200 OK", encoding='utf8'))
+        print("get request: " + request + " from " + request_addr[0])
         wav_file_dir = ''
+        dump_name = ''
+        isOK = False
         if request == 'uploaded':
             # 直接从文件中找
+            print('method: upload')
             wav_file_dir = open('./resources/upload_music.pkl', 'rb')
             pkl_object = pickle.load(wav_file_dir)
             pkl_object.tofile('./resources/upload_music.wav')
             wav_file_dir = './resources/upload_music.wav'
+            music = process(wav_file_dir)
+            print("music info generated")
+            request_conn.send(bytes('200 OK', encoding='utf8'))
+            # 序列化成文件
+            dump_file_path = "./test_resources/music_info.dump"
+            dump_file = open(dump_file_path, 'wb')
+            pickle.dump(music, dump_file)
+            dump_file.close()
+            # 将序列化文件上传到桶
+            print("dump file ready: " + dump_file_path)
+            dump_name = "music_info.dumps"
+            resp = upload_to_bucket(dump_file_path, dump_name)
+            if resp:
+                print('dumps file uploaded to bucket')
+                isOK = True
+            else:
+                print('dumps failed to upload to bucket')
         else:
             # 音乐名
-            wav_file_dir = "resources/wav/Angry/" + request + '.wav'
-        # request_conn.send(bytes("200 OK", encoding='utf8'))
-        print("get request: " + request + " from " + request_addr[0])
-        music = process(wav_file_dir)
-        # 序列化成文件
-        dump_file_path = "./test_resources/music_info.dumps"
-        dump_file = open(dump_file_path, 'wb')
-        pickle.dump(music, dump_file)
-        dump_file.close()
-        # 将序列化文件上传到桶
-        print("data ready: " + dump_file_path)
-        dump_name = "music_info.dumps"
-        resp = upload_to_bucket(dump_file_path, dump_name)
-        if resp:
-            print("dumps uploaded to bucket: " + dump_name)
-            print("start listening")
+            resp, music = find_music(request)
+            if resp == 200:
+                # OK
+                print('found requested music info in bucket')
+                request_conn.send(bytes('200 OK', encoding='utf8'))
+                isOK = True
+                dump_name = request + '.dump'
+            elif resp == 404:
+                # 404
+                print('failed to find requested music info in bucket')
+                request_conn.send(bytes('404 Not Found', encoding='utf8'))
+            else:
+                # 400
+                print('bad request when finding music info in bucket')
+                request_conn.send(bytes('400 Bad Request', encoding='utf8'))
+        if isOK:
+            # 准备好数据，可以相应pi
+            print("music info in bucket ,start listening")
             client_conn, client_addr = server_socket.accept()
             print("new connection: " + client_addr[0])
-            client_conn.send(bytes("music_info.dumps", encoding='utf8'))
+            client_conn.send(bytes(dump_name, encoding='utf8'))
             print("pack target sent to " + client_addr[0])
             client_conn.close()
         request_conn.close()
