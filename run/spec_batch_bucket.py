@@ -48,7 +48,7 @@ def run_proc(item):
             if wav_resp.status < 300:
                 pass
             else:
-                log_file.write(track_id.split('.')[0] + ":" + wav_resp.errorCode + "--" + wav_resp.errorMessage+'\n')
+                log_file.write(track_id.split('.')[0] + ":" + wav_resp.errorCode + "--" + wav_resp.errorMessage + '\n')
 
             jpg_resp = obs_client.putFile(
                 'spec-data',
@@ -60,11 +60,11 @@ def run_proc(item):
             if jpg_resp.status < 300:
                 pass
             else:
-                log_file.write(track_id.split('.')[0] + ":" + jpg_resp.errorCode + " " + jpg_resp.errorMessage+'\n')
+                log_file.write(track_id.split('.')[0] + ":" + jpg_resp.errorCode + " " + jpg_resp.errorMessage + '\n')
         except:
             log_file.write("==========EXCEPTION============\n")
-            log_file.write("except-track id:" + track_id+'\n')
-            log_file.write(traceback.format_exc()+'\n')
+            log_file.write("except-track id:" + track_id + '\n')
+            log_file.write(traceback.format_exc() + '\n')
             log_file.write("==========EXCEPTION============\n")
         os.remove(dest_wav)
         os.remove(dest_jpg)
