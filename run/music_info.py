@@ -12,7 +12,7 @@ class MusicInfo:
         fourier trans 5: pick 5 representative frequencies on average from the frequencies
         fourier trans 8: pick 8 representative frequencies on average from the frequencies
         beats frame beats frames
-        spectral centroid: The center of the spectrum represents the "center of mass" of the sound, and is also
+        spectrogram centroid: The center of the spectrum represents the "center of mass" of the sound, and is also
             called the first order distance of the spectrum. The smaller the value of the center of the spectrum,
             the more spectrum energy is concentrated in the low frequency range.
 
