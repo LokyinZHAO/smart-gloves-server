@@ -21,7 +21,7 @@ import SmartGlovesProject_Server.Util.frame_selector as frame_selector
 proxy_addr = "localhost"
 proxy_port = 6456
 
-server_addr = "localhost"
+server_addr = "0.0.0.0"
 server_port = 7435
 
 pred = Predictor("./resources/Resnet_SGD_valscore_60.pt")
@@ -161,7 +161,9 @@ if __name__ == '__main__':
         resp = upload_to_bucket(dump_file_path, dump_name)
         if resp:
             print("dumps uploaded to bucket: " + dump_name)
+            print("start listening")
             client_conn, client_addr = server_socket.accept()
+            print("new connection: " + client_addr[0])
             client_conn.send(bytes("music_info.dumps", encoding='utf8'))
             print("pack target sent to " + client_addr[0])
             client_conn.close()
