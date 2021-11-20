@@ -102,10 +102,11 @@ def upload_to_bucket(queue: multiprocessing.Queue, producer: int):
                 log_file.write(f'uploaded {cnt} :' + src_dir + '\n')
                 log_file.flush()
             else:
-                log_file.write(f'fail {cnt} :' + src_dir + '\n')
+                log_file.write(f'fail  :' + src_dir + '\n')
                 log_file.flush()
         except:
-            log_file.write(f'============exception={cnt}=========\n')
+            log_file.write(f'============exception==========\n')
+            log_file.write(src_dir + '\n')
             log_file.write(traceback.format_exc() + '\n')
             log_file.write('================================\n')
             log_file.flush()
@@ -137,13 +138,14 @@ def download_from_bucket(queue: multiprocessing.Queue, consumer: int):
             if resp.status < 300:
                 cnt += 1
                 queue.put(dest, block=True, timeout=None)
-                log_file.write(f'downloaded {i} :' + dest + '\n')
+                log_file.write(f'downloaded {cnt} :' + dest + '\n')
                 log_file.flush()
             else:
-                log_file.write(f"fail {i} :" + mood + '/' + wav_name + '\n')
+                log_file.write(f"fail  :" + mood + '/' + wav_name + '\n')
                 log_file.flush()
         except:
-            log_file.write(f'============exception={i}=========\n')
+            log_file.write(f'============exception==========\n')
+            log_file.write(i + '\n')
             log_file.write(traceback.format_exc() + '\n')
             log_file.write('================================\n')
             log_file.flush()
@@ -176,6 +178,7 @@ def music_info_gen_batch(src_queue: multiprocessing.Queue, dest_queue: multiproc
             src_dir = src_queue.get()
         except:
             log_file.write('============exception===========\n')
+            log_file.write(src_dir+'\n')
             log_file.write(traceback.format_exc() + '\n')
             log_file.write('================================\n')
             log_file.flush()
