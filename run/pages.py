@@ -40,8 +40,14 @@ st.subheader("powered by Raspberry Pi 4B")
 if st.checkbox('Show details'):
     st.write(
         "该产品为类似于手上音乐喷泉的智能手套。用户将手套佩戴在手上后，可以在配套屏幕上选择歌曲。经调取云数据并进行人工智能情感分析后，会在手套上产生与该歌曲相对应的破浪式振动和灯光变化。手套上遍布大量振子和大量微型彩色灯管，其中振子会根据音乐及其情感做类似音乐喷泉式的破浪行振动变化，彩色灯管会根据人工智能情感分析的结果，随歌曲的情感变化进行灯管颜色变化。后期也可能会增添其他创新功能。")
-    image = Image.open('frame.jpg')
+    image = Image.open('./resources/frame.jpg')
     st.image(image, caption='hust', use_column_width=True)
+
+proxy_addr = "localhost"
+proxy_port = 6456
+proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+proxy_socket.bind((proxy_addr, proxy_port))
+proxy_socket.listen(1)
 
 st.subheader('搜索音乐')
 st.write('您可以在云上音乐数据库中搜索您喜欢的歌曲')
@@ -50,6 +56,15 @@ t = st.text_input('搜索音乐', '')
 if not t == t0:
     pool = multiprocessing.Pool(processes=1)
     results = [pool.apply_async(send_to_sever, (t,))]
+    res_conn, res_addr = proxy_socket.accept()
+    res = res_conn.recv(1024).decode("utf8")
+    if res == '200 OK':
+        st.write('已找到您输入的音乐:smile:')
+    elif res == '404 Not Found':
+        st.write('没有找到您输入的音乐:disappointed:')
+    elif res == '400 Bad Request':
+        st.write('400 Bad Request:no_mouth:')
+    res_conn.close()
     t0 = t
     st.write('You mean ' + t + ' ?')
 
