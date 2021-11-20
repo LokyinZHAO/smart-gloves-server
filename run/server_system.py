@@ -1,3 +1,4 @@
+import glob
 import pickle
 import socket
 import sys
@@ -132,7 +133,7 @@ def find_music(tar: str):
 
 if __name__ == '__main__':
     '''
-    @version 2.4
+    @version 2.5
     '''
     proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     proxy_socket.bind((proxy_addr, proxy_port))
@@ -156,13 +157,11 @@ if __name__ == '__main__':
         wav_file_dir = ''
         dump_name = ''
         isOK = False
-        if request == 'uploaded':
+        if request.endswith('.wav'):
             # 直接从文件中找
             print('method: upload')
-            wav_file_dir = open('./resources/upload_music.pkl', 'rb')
-            pkl_object = pickle.load(wav_file_dir)
-            pkl_object.tofile('./resources/upload_music.wav')
-            wav_file_dir = './resources/upload_music.wav'
+            files = glob.glob('./resources/upload/' + '*wav', recursive=False)
+            wav_file_dir = files[0]
             music = process(wav_file_dir)
             print("music info generated")
             request_conn.send(bytes('200 OK', encoding='utf8'))
