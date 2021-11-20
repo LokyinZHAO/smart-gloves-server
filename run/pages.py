@@ -71,15 +71,17 @@ if not t == t0:
 st.subheader('音乐上传')
 st.write('您可以上传您喜欢的歌曲的文件，或者自己唱歌进行录制并上传')
 uploaded_file = st.file_uploader("上传一个音乐文件", type="wav")
+filename = st.text_input('请为该文件命名', '')
 
 if uploaded_file is not None:
     # 将传入的文件转为Opencv格式
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    up_pkl = open(file_dir, 'wb')
-    pickle.dump(file_bytes, up_pkl)
-    up_pkl.close()
+    file_bytes.tofile('./resources' + filename + '.wav')
+    # up_pkl = open(file_dir, 'wb')
+    # pickle.dump(file_bytes, up_pkl)
+    # up_pkl.close()
     pool = multiprocessing.Pool(processes=1)
-    results = [pool.apply_async(send_to_sever, ('uploaded',))]
+    results = [pool.apply_async(send_to_sever, (filename + '.wav',))]
     # opencv_image = cv2.imdecode(file_bytes, 1)
     # 展示图片
     # st.image(opencv_image, channels="BGR")
