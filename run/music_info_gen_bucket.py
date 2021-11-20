@@ -2,6 +2,7 @@ import multiprocessing
 import os
 import glob
 import time
+import traceback
 
 import librosa
 
@@ -90,15 +91,24 @@ def upload_to_bucket(queue: multiprocessing.Queue, producer: int):
             src_dir = queue.get()
             continue
         obj_name = src_dir.split('/')[-1]
-        start_time = time.time()
-        resp = obs_client.putFile('info-data', objectKey=obj_name, file_path=src_dir)
-        end_time = time.time()
-        total_time += end_time - start_time
-        if resp.status < 300:
-            cnt += 1
-            os.remove(src_dir)
-        else:
-            log_file.write('fail :' + src_dir + '\n')
+        try:
+            start_time = time.time()
+            resp = obs_client.putFile('info-data', objectKey=obj_name, file_path=src_dir)
+            end_time = time.time()
+            total_time += end_time - start_time
+            if resp.status < 300:
+                cnt += 1
+                os.remove(src_dir)
+                log_file.write(f'uploaded {cnt} :' + src_dir + '\n')
+                log_file.flush()
+            else:
+                log_file.write(f'fail {cnt} :' + src_dir + '\n')
+                log_file.flush()
+        except:
+            log_file.write(f'============exception={cnt}=========\n')
+            log_file.write(traceback.format_exc() + '\n')
+            log_file.write('================================\n')
+            log_file.flush()
         src_dir = queue.get()
     log_file.close()
     return total_time, cnt
@@ -116,19 +126,27 @@ def download_from_bucket(queue: multiprocessing.Queue, consumer: int):
         mood = i.split('/')[-2]
         wav_name = i.split('/')[-1].replace('.mp3', '.wav')
         dest = i.replace('.mp3', '.wav')
-        start_time = time.time()
-        resp = obs_client.getObject('wav-data',
-                                    objectKey=mood + '/' + wav_name,
-                                    downloadPath=dest
-                                    )
-        end_time = time.time()
-        total_time += end_time - start_time
-        if resp.status < 300:
-            cnt += 1
-            queue.put(dest, block=True, timeout=None)
-        else:
-            log_file.write("fail :" + mood + '/' + wav_name + '\n')
-    # TODO 生产者完成后需要通知gen
+        try:
+            start_time = time.time()
+            resp = obs_client.getObject('wav-data',
+                                        objectKey=mood + '/' + wav_name,
+                                        downloadPath=dest
+                                        )
+            end_time = time.time()
+            total_time += end_time - start_time
+            if resp.status < 300:
+                cnt += 1
+                queue.put(dest, block=True, timeout=None)
+                log_file.write(f'downloaded {i} :' + dest + '\n')
+                log_file.flush()
+            else:
+                log_file.write(f"fail {i} :" + mood + '/' + wav_name + '\n')
+                log_file.flush()
+        except:
+            log_file.write(f'============exception={i}=========\n')
+            log_file.write(traceback.format_exc() + '\n')
+            log_file.write('================================\n')
+            log_file.flush()
     for i in range(consumer):
         queue.put('EOF')
     log_file.close()
@@ -142,18 +160,25 @@ def music_info_gen_batch(src_queue: multiprocessing.Queue, dest_queue: multiproc
     time_consume = 0
     item_cnt = 0
     while src_dir != 'EOF':
-        start_time = time.time()
-        music = process(src_dir, pred=pred)
-        end_time = time.time()
-        time_consume += end_time - start_time
-        dump_file = open(src_dir.replace('.wav', '.dump'), 'wb')
-        pickle.dump(music, dump_file)
-        dump_file.close()
-        dest_queue.put(src_dir.replace('.wav', '.dump'))
-        os.remove(src_dir)
-        item_cnt += 1
-        log_file.write(f'{item_cnt}: {src_dir} processed\n')
-        src_dir = src_queue.get()
+        try:
+            start_time = time.time()
+            music = process(src_dir, pred=pred)
+            end_time = time.time()
+            time_consume += end_time - start_time
+            dump_file = open(src_dir.replace('.wav', '.dump'), 'wb')
+            pickle.dump(music, dump_file)
+            dump_file.close()
+            dest_queue.put(src_dir.replace('.wav', '.dump'))
+            os.remove(src_dir)
+            item_cnt += 1
+            log_file.write(f'{item_cnt}: {src_dir} processed\n')
+            log_file.flush()
+            src_dir = src_queue.get()
+        except:
+            log_file.write('============exception===========\n')
+            log_file.write(traceback.format_exc() + '\n')
+            log_file.write('================================\n')
+            log_file.flush()
     dest_queue.put('EOF')
     log_file.close()
     return time_consume, item_cnt
@@ -164,8 +189,8 @@ if __name__ == '__main__':
     @version 2.1
     """
     manager = multiprocessing.Manager()
-    wav_queue = manager.Queue(maxsize=30)
-    info_queue = manager.Queue(maxsize=30)
+    wav_queue = manager.Queue(maxsize=4)
+    info_queue = manager.Queue(maxsize=4)
     pool = multiprocessing.Pool(processes=6)
     results = [
         pool.apply_async(download_from_bucket, (wav_queue, 4,)),
@@ -205,23 +230,23 @@ if __name__ == '__main__':
     batch_log_file.close()
 
 # if __name__ == '__main__':
-# wav_queue = multiprocessing.Queue(maxsize=0)
-# dump_queue = multiprocessing.Queue(maxsize=0)
-# d_time, d_cnt = download_from_bucket(wav_queue, 2)
-# g1_time, g1_cnt = music_info_gen_batch(wav_queue, dump_queue, 1)
-# g2_time, g2_cnt = music_info_gen_batch(wav_queue, dump_queue, 2)
-# u_time, u_cnt = upload_to_bucket(dump_queue, 2)
-# g_time = g1_time + g2_time
-# g_time /= 2
-# g_cnt = g1_cnt + g2_cnt
-# print(f'total download time:{d_time}')
-# print(f'total download items:{d_cnt}')
-# print(f'download time per item: {d_time / d_cnt}')
-# print("")
-# print(f'total process time:{g_time}')
-# print(f'total process items:{g_cnt}')
-# print(f'process time per item: {g_time / g_cnt}')
-# print("")
-# print(f'total upload time:{u_time}')
-# print(f'total upload items:{u_cnt}')
-# print(f'upload time per item: {u_time / u_cnt}')
+#     wav_queue = multiprocessing.Queue(maxsize=0)
+#     dump_queue = multiprocessing.Queue(maxsize=0)
+#     d_time, d_cnt = download_from_bucket(wav_queue, 2)
+#     g1_time, g1_cnt = music_info_gen_batch(wav_queue, dump_queue, 1)
+#     g2_time, g2_cnt = music_info_gen_batch(wav_queue, dump_queue, 2)
+#     u_time, u_cnt = upload_to_bucket(dump_queue, 2)
+#     g_time = g1_time + g2_time
+#     g_time /= 2
+#     g_cnt = g1_cnt + g2_cnt
+#     print(f'total download time:{d_time}')
+#     print(f'total download items:{d_cnt}')
+#     print(f'download time per item: {d_time / d_cnt}')
+#     print("")
+#     print(f'total process time:{g_time}')
+#     print(f'total process items:{g_cnt}')
+#     print(f'process time per item: {g_time / g_cnt}')
+#     print("")
+#     print(f'total upload time:{u_time}')
+#     print(f'total upload items:{u_cnt}')
+#     print(f'upload time per item: {u_time / u_cnt}')
