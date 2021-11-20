@@ -46,8 +46,6 @@ if st.checkbox('Show details'):
 proxy_addr = "localhost"
 proxy_port = 6456
 proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-proxy_socket.bind((proxy_addr, proxy_port))
-proxy_socket.listen(1)
 
 st.subheader('搜索音乐')
 st.write('您可以在云上音乐数据库中搜索您喜欢的歌曲')
@@ -76,12 +74,13 @@ filename = st.text_input('请为该文件命名', '')
 if uploaded_file is not None:
     # 将传入的文件转为Opencv格式
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    file_bytes.tofile('./resources' + filename + '.wav')
-    # up_pkl = open(file_dir, 'wb')
-    # pickle.dump(file_bytes, up_pkl)
-    # up_pkl.close()
-    pool = multiprocessing.Pool(processes=1)
-    results = [pool.apply_async(send_to_sever, (filename + '.wav',))]
+    if filename != '':
+        file_bytes.tofile('./resources/upload/' + filename + '.wav')
+        # up_pkl = open(file_dir, 'wb')
+        # pickle.dump(file_bytes, up_pkl)
+        # up_pkl.close()
+        pool = multiprocessing.Pool(processes=1)
+        results = [pool.apply_async(send_to_sever, (filename + '.wav',))]
     # opencv_image = cv2.imdecode(file_bytes, 1)
     # 展示图片
     # st.image(opencv_image, channels="BGR")
