@@ -12,7 +12,14 @@ def select_frame(fourier_trans_matrix: np.ndarray, selection):
 
 
 def select_frame_5(fourier_trans_matrix: np.ndarray):
-    return select_frame(fourier_trans_matrix, selection=(118, 315, 512, 709, 906))
+    f_5 = select_frame(fourier_trans_matrix, selection=(118, 315, 512, 709, 906))
+    for i in range(len(f_5)):
+        for j in range(len(f_5[0])):
+            f_5[i][j] *= 4
+            f_5[i][j] = int(f_5[i][j])
+            if f_5[i][j] == 4:
+                f_5[i][j] = 3
+    return f_5
 
 
 def select_frame_8(fourier_trans_matrix: np.ndarray):
