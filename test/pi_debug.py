@@ -15,7 +15,7 @@ if __name__ == '__main__':
     server_socket.listen(3)
 
     print("start listening")
-    dump_name = "music_info.dumps"
+    dump_name = "music_info.dump"
     print("dumps uploaded to bucket: " + dump_name)
     print("start listening")
     while True:
